@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 
 namespace VersionManagement
 {
@@ -26,8 +27,12 @@ namespace VersionManagement
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddJsonOptions(options =>
-             options.JsonSerializerOptions.PropertyNamingPolicy = null);
+            services.AddControllers().AddNewtonsoftJson(x =>
+            {
+                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                x.SerializerSettings.ContractResolver = new DefaultContractResolver();
+            });
+            //AddJsonOptions(options =>options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
             services.AddDbContext<VersionManagementContext>(options =>
                 options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnectionString")));
