@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="SQL\**" />
+    <Compile Remove="Vue\**" />
+    <Content Remove="SQL\**" />
+    <Content Remove="Vue\**" />
+    <EmbeddedResource Remove="SQL\**" />
+    <EmbeddedResource Remove="Vue\**" />
+    <None Remove="SQL\**" />
+    <None Remove="Vue\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.21" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

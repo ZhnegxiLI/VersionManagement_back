@@ -21,9 +21,36 @@ namespace VersionManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Projet>> GetProjetList()
+        public async Task<List<Version>> GetVersionByProjetId(long? ProjetId, long? ParentId)
         {
-            var result = await db.Projet.Include(p => p.Versions).ToListAsync();
+            var result = await (from v in db.Version
+                                join p in db.Projet on v.ProjetId equals p.Id
+                                where (ProjetId == null || p.Id== ProjetId) && (ParentId == null || p.ParentId == ParentId)
+                                orderby v.CreatedOn descending
+                                select v).ToListAsync();
+            return result;
+        }
+
+        [HttpGet]
+        public async Task<List<dynamic>> GetProjetList()
+        {
+            var result =  await (from p in db.Projet
+                            select new
+                            {
+                                p.Id,
+                                p.CreatedBy,
+                                p.CreatedOn,
+                                p.Description,
+                                p.ParentId,
+                                p.Name,
+                                Versions = p.Versions.OrderByDescending(p => p.CreatedOn).ToList(),
+                                EnvironmentList = (from e in db.Environment
+                                                   join pe in db.ProjetEnvironment on e.Id equals pe.EnvironmentId
+                                                   join pr in db.Projet on pe.ProjetId equals pr.Id
+                                                   where (p.ParentId ==null && pr.ParentId == p.Id) || (p.ParentId!=null && pr.Id == p.Id )
+                                                   select e).ToList()
+                            }).ToListAsync<dynamic>();
+
             return result;
         }
 
@@ -107,27 +134,35 @@ namespace VersionManagement.Controllers
         [HttpPost]
         public async Task<long> CreateProjet([FromBody] CreateProjetCriteria projet)
         {
+            var projetToSave = new Projet();
             if (projet.Id > 0)
             {
-
+                projetToSave.UpdatedOn = DateTime.Now;
+                projetToSave.Id = projet.Id;
             }
             else
             {
-                projet.CreatedOn = DateTime.Now;
+                projetToSave.Id = 0;
+                projetToSave.CreatedOn = DateTime.Now;
             }
-            db.Update(projet);
+            projetToSave.Name = projet.Name;
+            projetToSave.Description = projet.Description;
+            projetToSave.ParentId = projet.ParentId;
+
+
+
+            db.Update(projetToSave);
             await db.SaveChangesAsync();
 
-
-
-            if (projet.ParentId == null)
+            if (projetToSave.ParentId == null && projet.EnvIds.Count() > 0)
             {
-                var subProjetList = await db.Projet.Where(p => p.ParentId == projet.Id).ToListAsync();
+                var subProjetList = await db.Projet.Where(p => p.ParentId == projetToSave.Id).ToListAsync();
 
                 var projetEnvironmentToRemove = await (from pe in db.ProjetEnvironment
                                                        where subProjetList.Select(p => p.Id).Contains(pe.ProjetId)
                                                        select pe).ToListAsync();
                 db.RemoveRange(projetEnvironmentToRemove);
+
                 if (projet.EnvIds.Count() > 0)
                 {
                     foreach (var sub in subProjetList)
