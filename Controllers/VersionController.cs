@@ -8,7 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace VersionManagement.Controllers
 {
-
+    [Route("[controller]/{action}/{id?}")]
+    [ApiController]
     public class VersionController : ControllerBase
     {
         private readonly VersionManagementContext db;

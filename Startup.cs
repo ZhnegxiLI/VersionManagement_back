@@ -31,6 +31,7 @@ namespace VersionManagement
             {
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 x.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                x.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             });
             //AddJsonOptions(options =>options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
