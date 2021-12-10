@@ -1,6 +1,9 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+
 public class  BaseObject
 {
+    [Key]
     public long Id { get; set; }
 
     public long? CreatedBy { get; set; }

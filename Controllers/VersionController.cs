@@ -48,6 +48,7 @@ namespace VersionManagement.Controllers
                                 EnvironmentList = (from e in db.Environment
                                                    join pe in db.ProjetEnvironment on e.Id equals pe.EnvironmentId
                                                    join pr in db.Projet on pe.ProjetId equals pr.Id
+                                                   orderby e.Order
                                                    where (p.ParentId ==null && pr.ParentId == p.Id) || (p.ParentId!=null && pr.Id == p.Id )
                                                    select e).ToList()
                             }).ToListAsync<dynamic>();
@@ -58,7 +59,7 @@ namespace VersionManagement.Controllers
         [HttpGet]
         public async Task<List<Environment>> GetEnvironmentList()
         {
-            var result = await db.Environment.ToListAsync();
+            var result = await db.Environment.OrderBy(p=>p.Order).ToListAsync();
             return result;
         }
 
@@ -71,7 +72,7 @@ namespace VersionManagement.Controllers
                           join e in db.Environment on pe.EnvironmentId equals e.Id
                           join p in db.Projet on pe.ProjetId equals p.Id
                           where (ProjetId == null || p.Id == ProjetId) && (ParentId == null || p.ParentId == ParentId)
-                          orderby p.Id, v.Id, d.CreatedOn
+                          orderby p.Id, v.Id, d.CreatedOn, e.Order
                           select new
                           {
                               Id = d.Id,
@@ -104,6 +105,7 @@ namespace VersionManagement.Controllers
                                                Description = p.Description,
                                                ProjetEnvironment = (from pe in db.ProjetEnvironment
                                                                     join e in db.Environment on pe.EnvironmentId equals e.Id
+                                                                    orderby pe.Id, e.Order
                                                                     where pe.ProjetId == p.Id
                                                                     select new
                                                                     {

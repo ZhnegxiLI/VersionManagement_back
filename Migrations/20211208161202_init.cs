@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace VersionManagement.Migrations
 {
@@ -12,12 +13,13 @@ namespace VersionManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedBy = table.Column<long>(nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: true),
                     UpdatedBy = table.Column<long>(nullable: true),
                     UpdatedOn = table.Column<DateTime>(nullable: true),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Order = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,7 +31,7 @@ namespace VersionManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedBy = table.Column<long>(nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: true),
                     UpdatedBy = table.Column<long>(nullable: true),
@@ -48,7 +50,7 @@ namespace VersionManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedBy = table.Column<long>(nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: true),
                     UpdatedBy = table.Column<long>(nullable: true),
@@ -79,7 +81,7 @@ namespace VersionManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedBy = table.Column<long>(nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: true),
                     UpdatedBy = table.Column<long>(nullable: true),
@@ -103,7 +105,7 @@ namespace VersionManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedBy = table.Column<long>(nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: true),
                     UpdatedBy = table.Column<long>(nullable: true),

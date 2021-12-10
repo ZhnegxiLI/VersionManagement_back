@@ -138,3 +138,19 @@ END;
 
 GO
 
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20211208111950_addOrderInEnv')
+BEGIN
+    ALTER TABLE [Environment] ADD [Order] int NULL;
+END;
+
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20211208111950_addOrderInEnv')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20211208111950_addOrderInEnv', N'3.1.21');
+END;
+
+GO
+

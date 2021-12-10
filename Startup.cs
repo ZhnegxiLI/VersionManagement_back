@@ -36,7 +36,7 @@ namespace VersionManagement
             //AddJsonOptions(options =>options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
             services.AddDbContext<VersionManagementContext>(options =>
-                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnectionString")));
+                options.UseNpgsql(this.Configuration.GetConnectionString("DefaultConnectionString")));
 
             var hosts = Configuration.GetSection("Cors:AllowedOrigins").Get<List<string>>();
             services.AddCors(options =>
@@ -47,11 +47,14 @@ namespace VersionManagement
                       builder.WithOrigins(hosts.ToArray()).AllowAnyHeader().AllowAnyMethod();
                   });
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddFile("Logs/PlatCore-{Date}.txt");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
