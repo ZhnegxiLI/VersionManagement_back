@@ -89,43 +89,52 @@ namespace VersionManagement.Controllers
         [HttpGet]
         public List<dynamic> GetVersionList()
         {
-            var result = (from pp in db.Projet
-                          where pp.ParentId == null || pp.ParentId == -1
-                          select new
-                          {
-                              Id = pp.Id,
-                              Name = pp.Name,
-                              Description = pp.Description,
-                              SubProjet = (from p in db.Projet
-                                           where p.ParentId == pp.Id
-                                           select new
-                                           {
-                                               Id = p.Id,
-                                               Name = p.Name,
-                                               Description = p.Description,
-                                               ProjetEnvironment = (from pe in db.ProjetEnvironment
-                                                                    join e in db.Environment on pe.EnvironmentId equals e.Id
-                                                                    orderby pe.Id, e.Order
-                                                                    where pe.ProjetId == p.Id
-                                                                    select new
-                                                                    {
-                                                                        EnvironmentId = e.Id,
-                                                                        Descriptino = pe.Description,
-                                                                        EnvironmentName = e.Name,
-                                                                        DeploimentHistory = db.DeploimentHistory.Where(p => p.ProjetEnvironmentId == pe.Id).Select(p=>new {
-                                                                            Id = p.Id,
-                                                                            EnvironmentId = p.ProjetEnvironment.EnvironmentId,
-                                                                            CreatedOn = p.CreatedOn,
-                                                                            VersionNumber = p.Version.VersionNumber,
-                                                                            VersionId = p.VersionId
-                                                                        }).OrderByDescending(p => p.CreatedOn).ToList()
+            try
+            {
+                var result = (from pp in db.Projet
+                              where pp.ParentId == null || pp.ParentId == -1
+                              select new
+                              {
+                                  Id = pp.Id,
+                                  Name = pp.Name,
+                                  Description = pp.Description,
+                                  SubProjet = (from p in db.Projet
+                                               where p.ParentId == pp.Id
+                                               select new
+                                               {
+                                                   Id = p.Id,
+                                                   Name = p.Name,
+                                                   Description = p.Description,
+                                                   ProjetEnvironment = (from pe in db.ProjetEnvironment
+                                                                        join e in db.Environment on pe.EnvironmentId equals e.Id
+                                                                        orderby pe.Id, e.Order
+                                                                        where pe.ProjetId == p.Id
+                                                                        select new
+                                                                        {
+                                                                            EnvironmentId = e.Id,
+                                                                            Descriptino = pe.Description,
+                                                                            EnvironmentName = e.Name,
+                                                                            DeploimentHistory = db.DeploimentHistory.Where(p => p.ProjetEnvironmentId == pe.Id).Select(p => new {
+                                                                                Id = p.Id,
+                                                                                EnvironmentId = p.ProjetEnvironment.EnvironmentId,
+                                                                                CreatedOn = p.CreatedOn,
+                                                                                VersionNumber = p.Version.VersionNumber,
+                                                                                VersionId = p.VersionId
+                                                                            }).OrderByDescending(p => p.CreatedOn).ToList()
 
-                                                                    }).ToList()
-                                           }).ToList(),
+                                                                        }).ToList()
+                                               }).ToList(),
 
-                              VersionInfo = db.Version.Where(x => x.ProjetId == pp.Id).OrderByDescending(x => x.CreatedOn).FirstOrDefault()
-                          }).ToList<dynamic>();
-            return result;
+                                  VersionInfo = db.Version.Where(x => x.ProjetId == pp.Id).OrderByDescending(x => x.CreatedOn).FirstOrDefault()
+                              }).ToList<dynamic>();
+                return result;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+           
         }
 
 
@@ -184,7 +193,7 @@ namespace VersionManagement.Controllers
                     await db.SaveChangesAsync();
                 }
             }
-            return projet.Id;
+            return projetToSave.Id;
         }
 
         [HttpPost]

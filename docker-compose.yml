@@ -1,0 +1,58 @@
+version: '3.4'
+
+services:
+  docker.version_backend:
+    image: ${DOCKER_REGISTRY-}versionmanagement
+    container_name: docker.version_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+    ports:
+      - "4000:80"
+    depends_on:
+      - docker.postgres
+    networks:
+      - version-net
+    volumes:
+      - /c/Users/Zhengxi/Desktop/version_netcore_volume/appsettings.Development.json:/app/appsettings.Development.json
+      - /c/Users/Zhengxi/Desktop/version_netcore_volume/Logs:/app/Logs
+
+  docker.postgres:
+    image: postgres:alpine
+    container_name: docker.postgres
+    ports: 
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=123456
+      - pgdata=/var/lib/postgresql/data
+    volumes:
+      - /c/Users/Zhengxi/Desktop/postgres_volume:/var/lib/postgresql/data
+    networks:
+      - version-net
+
+  docker.nginx:
+    image: nginx:stable-alpine
+    container_name: docker.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - /c/Users/Zhengxi/Desktop/nginx_volume/conf.d:/etc/nginx/conf.d
+      - /c/Users/Zhengxi/Desktop/nginx_volume/nginx.conf:/etc/nginx/nginx.conf
+      - /c/Users/Zhengxi/Desktop/nginx_volume/html:/usr/share/nginx/html
+      - /c/Users/Zhengxi/Desktop/nginx_volume/log:/var/log/nginx
+    networks:
+      - version-net
+ 
+networks:
+  version-net:
+    driver: bridge
+
+  
+   
+    
