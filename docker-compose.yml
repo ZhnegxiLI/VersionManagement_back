@@ -1,8 +1,8 @@
-version: '3.4'
+version: '3.6'
 
 services:
   docker.version_backend:
-    image: ${DOCKER_REGISTRY-}versionmanagement
+    image: ${DOCKER_REGISTRY-}versionmanagement_backend
     container_name: docker.version_backend
     build:
       context: .
@@ -16,9 +16,22 @@ services:
       - docker.postgres
     networks:
       - version-net
-    volumes:
-      - /c/Users/Zhengxi/Desktop/version_netcore_volume/appsettings.Development.json:/app/appsettings.Development.json
-      - /c/Users/Zhengxi/Desktop/version_netcore_volume/Logs:/app/Logs
+      - nginx-net
+    # volumes:
+    #   - /c/Users/Zhengxi/Desktop/version_netcore_volume/appsettings.Development.json:/app/appsettings.Development.json
+    #   - /c/Users/Zhengxi/Desktop/version_netcore_volume/Logs:/app/Logs
+
+  docker.version_frontend:
+     image: ${DOCKER_REGISTRY-}versionmanagement_frontend
+     container_name: docker.version_frontend
+     restart: always
+     build:
+      context: ./Vue 
+     depends_on: 
+      - docker.version_backend
+     networks:
+      - version-net
+      - nginx-net
 
   docker.postgres:
     image: postgres:alpine
@@ -29,29 +42,33 @@ services:
     environment:
       - POSTGRES_PASSWORD=123456
       - pgdata=/var/lib/postgresql/data
-    volumes:
-      - /c/Users/Zhengxi/Desktop/postgres_volume:/var/lib/postgresql/data
+    # volumes:
+    #   - /c/Users/Zhengxi/Desktop/postgres_volume:/var/lib/postgresql/data
     networks:
       - version-net
 
-  docker.nginx:
-    image: nginx:stable-alpine
-    container_name: docker.nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    restart: always
-    volumes:
-      - /c/Users/Zhengxi/Desktop/nginx_volume/conf.d:/etc/nginx/conf.d
-      - /c/Users/Zhengxi/Desktop/nginx_volume/nginx.conf:/etc/nginx/nginx.conf
-      - /c/Users/Zhengxi/Desktop/nginx_volume/html:/usr/share/nginx/html
-      - /c/Users/Zhengxi/Desktop/nginx_volume/log:/var/log/nginx
-    networks:
-      - version-net
+
+  # docker.nginx:
+  #   image: nginx:stable-alpine
+  #   container_name: docker.nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   restart: always
+  #   volumes:
+  #     - /c/Users/Zhengxi/Desktop/nginx_volume/conf.d:/etc/nginx/conf.d
+  #     - /c/Users/Zhengxi/Desktop/nginx_volume/nginx.conf:/etc/nginx/nginx.conf
+  #     - /c/Users/Zhengxi/Desktop/nginx_volume/html:/usr/share/nginx/html
+  #     - /c/Users/Zhengxi/Desktop/nginx_volume/log:/var/log/nginx
+  #   networks:
+  #     - version-net
  
 networks:
   version-net:
     driver: bridge
+  nginx-net:
+    external: true
+
 
   
    
