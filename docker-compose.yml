@@ -17,9 +17,9 @@ services:
     networks:
       - version-net
       - nginx-net
-    # volumes:
-    #   - /c/Users/Zhengxi/Desktop/version_netcore_volume/appsettings.Development.json:/app/appsettings.Development.json
-    #   - /c/Users/Zhengxi/Desktop/version_netcore_volume/Logs:/app/Logs
+    volumes:
+      - /home/zhengxi/docker_volume/dotnet/versionmanagement/appsettings.Development.json:/app/appsettings.Development.json
+      - /home/zhengxi/docker_volume/dotnet/versionmanagement/Logs:/app/Logs
 
   docker.version_frontend:
      image: ${DOCKER_REGISTRY-}versionmanagement_frontend
@@ -33,36 +33,20 @@ services:
       - version-net
       - nginx-net
 
-  docker.postgres:
+  docker.version_postgres:
     image: postgres:alpine
-    container_name: docker.postgres
+    container_name: docker.version_postgres
     ports: 
       - "5432:5432"
     restart: always
     environment:
       - POSTGRES_PASSWORD=123456
       - pgdata=/var/lib/postgresql/data
-    # volumes:
-    #   - /c/Users/Zhengxi/Desktop/postgres_volume:/var/lib/postgresql/data
+    volumes:
+      - /home/zhengxi/docker_volume/postgres/postgres.versionmanagement:/var/lib/postgresql/data
     networks:
       - version-net
 
-
-  # docker.nginx:
-  #   image: nginx:stable-alpine
-  #   container_name: docker.nginx
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   restart: always
-  #   volumes:
-  #     - /c/Users/Zhengxi/Desktop/nginx_volume/conf.d:/etc/nginx/conf.d
-  #     - /c/Users/Zhengxi/Desktop/nginx_volume/nginx.conf:/etc/nginx/nginx.conf
-  #     - /c/Users/Zhengxi/Desktop/nginx_volume/html:/usr/share/nginx/html
-  #     - /c/Users/Zhengxi/Desktop/nginx_volume/log:/var/log/nginx
-  #   networks:
-  #     - version-net
- 
 networks:
   version-net:
     driver: bridge
